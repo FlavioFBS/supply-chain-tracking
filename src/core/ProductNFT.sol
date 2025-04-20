@@ -1,53 +1,29 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.26;
-import { IERC721Custom } from '../interfaces/IERC721.sol';
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract ProductNFT is IERC721Custom {
-    function supportsInterface(
-        bytes4 interfaceId
-    ) external view override returns (bool) {}
+import "../access/RolManager.sol";
 
-    function balanceOf(
-        address owner
-    ) external view override returns (uint256 balance) {}
 
-    function ownerOf(
-        uint256 tokenId
-    ) external view override returns (address owner) {}
+contract ProductNFT is ERC721, AccessControl {
+    uint256 private _tokenIdCounter;
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external override {}
+    constructor() ERC721("SupplyChainProduct", "SCP") {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(Roles.MINTER_ROLE, msg.sender);
+    }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external override {}
+    function mint(address to) external onlyRole(Roles.MINTER_ROLE) returns(uint256) {
+        _tokenIdCounter++;
+        uint256 newTokenId = _tokenIdCounter;
+        _safeMint(to, newTokenId);
+        return newTokenId;
+    }
 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external override {}
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
 
-    function approve(address to, uint256 tokenId) external override {}
-
-    function setApprovalForAll(
-        address operator,
-        bool approved
-    ) external override {}
-
-    function getApproved(
-        uint256 tokenId
-    ) external view override returns (address operator) {}
-
-    function isApprovedForAll(
-        address owner,
-        address operator
-    ) external view override returns (bool) {}
 }

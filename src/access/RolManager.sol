@@ -6,4 +6,5 @@ library Roles {
     bytes32 public constant MANUFACTURER_ROLE = keccak256("MANUFACTURER_ROLE");
     bytes32 public constant CARRIER_ROLE = keccak256("CARRIER_ROLE");
     bytes32 public constant RETAILER_ROLE = keccak256("RETAILER_ROLE");
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 }
