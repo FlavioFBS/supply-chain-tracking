@@ -41,12 +41,11 @@ contract ProductRegistryTest is Test {
     function testRegisterProductUnauthorized() public {
         vm.startPrank(unauthorizedUser);
         string memory ipfsHash = "QmTestHash";
-        // vm.expectRevert("AccessControl: account is missing role___"); // Mensaje genérico de OpenZeppelin
         vm.expectRevert(
-            abi.encodeWithSelector(
-                AccessControlUnauthorizedAccount.selector, // Selector del custom error
-                unauthorizedUser, // Dirección del usuario no autorizado
-                Roles.MANUFACTURER_ROLE // Rol requerido
+            abi.encodeWithSignature(
+                "AccessControlUnauthorizedAccount(address,bytes32)",
+                unauthorizedUser,
+                Roles.MANUFACTURER_ROLE
             )
         );
         productRegistry.registerProduct(ipfsHash);
@@ -57,11 +56,10 @@ contract ProductRegistryTest is Test {
         vm.startPrank(manufacturer);
         string memory ipfsHash = "QmTestHash";
 
-        // Simular fallo en mint
         vm.mockCall(
             address(productNFT),
             abi.encodeWithSelector(productNFT.mint.selector),
-            abi.encode(0) // Simula que mint devuelve 0 (fallo)
+            abi.encode(0)
         );
 
         vm.expectRevert("Minting failed");
