@@ -3,10 +3,10 @@
 pragma solidity 0.8.26;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import { ProductNFT } from './ProductNFT.sol';
-import '../access/RolManager.sol';
+import {ProductNFT} from "./ProductNFT.sol";
+import "../access/RolManager.sol";
 
-contract ProductRegistry is AccessControl{
+contract ProductRegistry is AccessControl {
     ProductNFT public productNFT;
 
     struct Product {
@@ -26,8 +26,8 @@ contract ProductRegistry is AccessControl{
 
     function registerProduct(string memory _ipfsHash) external onlyRole(Roles.MANUFACTURER_ROLE) {
         uint256 productId = productNFT.mint(msg.sender);
+        require(productId > 0, "Minting failed"); // Verificación añadida
         products[productId] = Product(msg.sender, block.timestamp, _ipfsHash);
         emit ProductRegistered(productId, msg.sender, _ipfsHash);
     }
-
 }
