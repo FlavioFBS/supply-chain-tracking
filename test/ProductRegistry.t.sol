@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.26;
 
 import "forge-std/Test.sol";
 import "../src/core/ProductRegistry.sol";
@@ -43,9 +43,7 @@ contract ProductRegistryTest is Test {
         string memory ipfsHash = "QmTestHash";
         vm.expectRevert(
             abi.encodeWithSignature(
-                "AccessControlUnauthorizedAccount(address,bytes32)",
-                unauthorizedUser,
-                Roles.MANUFACTURER_ROLE
+                "AccessControlUnauthorizedAccount(address,bytes32)", unauthorizedUser, Roles.MANUFACTURER_ROLE
             )
         );
         productRegistry.registerProduct(ipfsHash);
@@ -56,11 +54,7 @@ contract ProductRegistryTest is Test {
         vm.startPrank(manufacturer);
         string memory ipfsHash = "QmTestHash";
 
-        vm.mockCall(
-            address(productNFT),
-            abi.encodeWithSelector(productNFT.mint.selector),
-            abi.encode(0)
-        );
+        vm.mockCall(address(productNFT), abi.encodeWithSelector(productNFT.mint.selector), abi.encode(0));
 
         vm.expectRevert("Minting failed");
         productRegistry.registerProduct(ipfsHash);
