@@ -12,3 +12,8 @@ docs/
 
 # Dotenv file
 .env
+
+# extensions
+.wake/
+Diagrams/
+.vscode/
