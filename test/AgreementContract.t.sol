@@ -30,10 +30,8 @@ contract AgreementContractTest is Test {
         // Deploy contracts
         manufacturerRegistry = new ManufacturerRegistry();
         retailerRegistry = new RetailerRegistry();
-        agreementContract = new AgreementContractManufacturerRetailer(
-            address(manufacturerRegistry),
-            address(retailerRegistry)
-        );
+        agreementContract =
+            new AgreementContractManufacturerRetailer(address(manufacturerRegistry), address(retailerRegistry));
 
         // Setup dates
         startDate = block.timestamp + 1 days;
@@ -42,7 +40,9 @@ contract AgreementContractTest is Test {
         // Mock admin validations
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(manufacturerRegistry.isAdminByManufacturer.selector, manufacturerAdmin, manufacturerId),
+            abi.encodeWithSelector(
+                manufacturerRegistry.isAdminByManufacturer.selector, manufacturerAdmin, manufacturerId
+            ),
             abi.encode(true)
         );
         vm.mockCall(
@@ -54,14 +54,7 @@ contract AgreementContractTest is Test {
 
     function testCreateAgreementSuccess() public {
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
 
         (
@@ -93,26 +86,12 @@ contract AgreementContractTest is Test {
 
     function testCreateAgreementFailsIfExists() public {
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
 
         vm.expectRevert("Agreement already exists");
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
     }
 
@@ -120,28 +99,14 @@ contract AgreementContractTest is Test {
         bytes32 emptyId;
         vm.expectRevert("Empty manufacturerId or retailerId");
         agreementContract.createAgreement(
-            agreementId,
-            emptyId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, emptyId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
     }
 
     function testCreateAgreementFailsWithEmptyTermsHash() public {
         vm.expectRevert("Empty termsHash");
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            "",
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, "", startDate, endDate, manufacturerAdmin, retailerAdmin
         );
     }
 
@@ -175,34 +140,22 @@ contract AgreementContractTest is Test {
         // Mock manufacturer admin validation to fail
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(manufacturerRegistry.isAdminByManufacturer.selector, manufacturerAdmin, manufacturerId),
+            abi.encodeWithSelector(
+                manufacturerRegistry.isAdminByManufacturer.selector, manufacturerAdmin, manufacturerId
+            ),
             abi.encode(false)
         );
 
         vm.expectRevert("Manufacturer admin not active");
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
     }
 
     function testSignAgreementSuccess() public {
         // Create agreement first
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
 
         // Manufacturer signs
@@ -262,14 +215,7 @@ contract AgreementContractTest is Test {
     function testSignAgreementFailsIfAlreadySigned() public {
         // Create and sign agreement
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
 
         vm.prank(manufacturerAdmin);
@@ -283,20 +229,15 @@ contract AgreementContractTest is Test {
     function testSignAgreementFailsIfUnauthorized() public {
         // Create agreement
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
 
         // Mock both admin validations to fail
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(manufacturerRegistry.isAdminByManufacturer.selector, unauthorizedUser, manufacturerId),
+            abi.encodeWithSelector(
+                manufacturerRegistry.isAdminByManufacturer.selector, unauthorizedUser, manufacturerId
+            ),
             abi.encode(false)
         );
         vm.mockCall(
@@ -313,14 +254,7 @@ contract AgreementContractTest is Test {
     function testIsAgreementActive() public {
         // Create and sign agreement
         agreementContract.createAgreement(
-            agreementId,
-            manufacturerId,
-            retailerId,
-            termsHash,
-            startDate,
-            endDate,
-            manufacturerAdmin,
-            retailerAdmin
+            agreementId, manufacturerId, retailerId, termsHash, startDate, endDate, manufacturerAdmin, retailerAdmin
         );
 
         // Not active before both parties sign

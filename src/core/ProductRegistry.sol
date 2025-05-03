@@ -26,11 +26,7 @@ contract ProductRegistry is AccessControl {
 
     event ProductRegistered(uint256 productId, address manufacturer, string ipfsHash);
 
-    constructor(
-        address _rolesManager,
-        address _manufacturerRegistry,
-        address _agreementContract
-    ) {
+    constructor(address _rolesManager, address _manufacturerRegistry, address _agreementContract) {
         _grantRole(DEFAULT_ADMIN_ROLE, _rolesManager);
         productNFT = new ProductNFT();
         manufacturerRegistry = ManufacturerRegistry(_manufacturerRegistry);
@@ -42,14 +38,10 @@ contract ProductRegistry is AccessControl {
         onlyRole(Roles.MANUFACTURER_ROLE)
     {
         require(
-            manufacturerRegistry.isAdminByManufacturer(msg.sender, manufacturerId),
-            "Not an active manufacturer admin"
+            manufacturerRegistry.isAdminByManufacturer(msg.sender, manufacturerId), "Not an active manufacturer admin"
         );
-        
-        require(
-            agreementContract.isAgreementActive(agreementId),
-            "Not an active Agreement"
-        );
+
+        require(agreementContract.isAgreementActive(agreementId), "Not an active Agreement");
 
         uint256 productId = productNFT.mint(msg.sender);
         require(productId > 0, "Minting failed");

@@ -47,7 +47,7 @@ contract AgreementContractManufacturerRetailer is AccessControl {
         require(manufacturerId != bytes32(0) && retailerId != bytes32(0), "Empty manufacturerId or retailerId");
         require(bytes(termsHash).length > 0, "Empty termsHash");
         require(startDate > block.timestamp && endDate > startDate, "Invalid start or end date");
-        
+
         // check if the manufacturerAdmiin and retailerAdmin are active admins of the manufacturer and retailer
         require(
             manufacturerRegistry.isAdminByManufacturer(manufacturerAdmin, manufacturerId),

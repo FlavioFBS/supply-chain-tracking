@@ -16,7 +16,7 @@ contract ProductRegistryTest is Test {
     ManufacturerRegistry public manufacturerRegistry;
     AgreementContractManufacturerRetailer public agreementContract;
     RetailerRegistry public retailerRegistry;
-    
+
     address public rolesManager = address(0x123);
     address public manufacturer = address(0x456);
     bytes32 public manufacturerId = keccak256("manufacturer1");
@@ -26,12 +26,9 @@ contract ProductRegistryTest is Test {
     function setUp() public {
         vm.startPrank(rolesManager);
         manufacturerRegistry = new ManufacturerRegistry();
-        agreementContract = new AgreementContractManufacturerRetailer(address(manufacturerRegistry), address(retailerRegistry));
-        productRegistry = new ProductRegistry(
-            rolesManager,
-            address(manufacturerRegistry),
-            address(agreementContract)
-        );
+        agreementContract =
+            new AgreementContractManufacturerRetailer(address(manufacturerRegistry), address(retailerRegistry));
+        productRegistry = new ProductRegistry(rolesManager, address(manufacturerRegistry), address(agreementContract));
         productNFT = productRegistry.productNFT();
         productRegistry.grantRole(Roles.MANUFACTURER_ROLE, manufacturer);
         vm.stopPrank();
@@ -43,20 +40,13 @@ contract ProductRegistryTest is Test {
 
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(
-                ManufacturerRegistry.isAdminByManufacturer.selector,
-                manufacturer,
-                manufacturerId
-            ),
+            abi.encodeWithSelector(ManufacturerRegistry.isAdminByManufacturer.selector, manufacturer, manufacturerId),
             abi.encode(true)
         );
 
         vm.mockCall(
             address(agreementContract),
-            abi.encodeWithSelector(
-                AgreementContractManufacturerRetailer.isAgreementActive.selector,
-                agreementId
-            ),
+            abi.encodeWithSelector(AgreementContractManufacturerRetailer.isAgreementActive.selector, agreementId),
             abi.encode(true)
         );
 
@@ -99,11 +89,7 @@ contract ProductRegistryTest is Test {
 
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(
-                ManufacturerRegistry.isAdminByManufacturer.selector,
-                manufacturer,
-                manufacturerId
-            ),
+            abi.encodeWithSelector(ManufacturerRegistry.isAdminByManufacturer.selector, manufacturer, manufacturerId),
             abi.encode(false)
         );
 
@@ -118,20 +104,13 @@ contract ProductRegistryTest is Test {
 
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(
-                ManufacturerRegistry.isAdminByManufacturer.selector,
-                manufacturer,
-                manufacturerId
-            ),
+            abi.encodeWithSelector(ManufacturerRegistry.isAdminByManufacturer.selector, manufacturer, manufacturerId),
             abi.encode(true)
         );
 
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(
-                AgreementContractManufacturerRetailer.isAgreementActive.selector,
-                agreementId
-            ),
+            abi.encodeWithSelector(AgreementContractManufacturerRetailer.isAgreementActive.selector, agreementId),
             abi.encode(false)
         );
 
@@ -139,35 +118,24 @@ contract ProductRegistryTest is Test {
         productRegistry.registerProduct(manufacturerId, agreementId, ipfsHash);
         vm.stopPrank();
     }
-    
+
     function testMintFailure() public {
         vm.startPrank(manufacturer);
         string memory ipfsHash = "QmTestHash";
 
         vm.mockCall(
             address(manufacturerRegistry),
-            abi.encodeWithSelector(
-                ManufacturerRegistry.isAdminByManufacturer.selector,
-                manufacturer,
-                manufacturerId
-            ),
+            abi.encodeWithSelector(ManufacturerRegistry.isAdminByManufacturer.selector, manufacturer, manufacturerId),
             abi.encode(true)
         );
 
         vm.mockCall(
             address(agreementContract),
-            abi.encodeWithSelector(
-                AgreementContractManufacturerRetailer.isAgreementActive.selector,
-                agreementId
-            ),
+            abi.encodeWithSelector(AgreementContractManufacturerRetailer.isAgreementActive.selector, agreementId),
             abi.encode(true)
         );
 
-        vm.mockCall(
-            address(productNFT),
-            abi.encodeWithSelector(productNFT.mint.selector),
-            abi.encode(0)
-        );
+        vm.mockCall(address(productNFT), abi.encodeWithSelector(productNFT.mint.selector), abi.encode(0));
 
         vm.expectRevert("Minting failed");
         productRegistry.registerProduct(manufacturerId, agreementId, ipfsHash);
