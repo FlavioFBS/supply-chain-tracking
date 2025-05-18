@@ -48,4 +48,10 @@ contract ProductRegistry is AccessControl {
         products[productId] = Product(msg.sender, block.timestamp, _ipfsHash, manufacturerId, agreementId, msg.sender);
         emit ProductRegistered(productId, msg.sender, _ipfsHash);
     }
+
+    function updateProductOwner(uint256 productId, address newOwner) external onlyRole(Roles.MANUFACTURER_ROLE) {
+        require(products[productId].manufacturer == msg.sender, "Not the product manufacturer");
+        require(newOwner != address(0), "Invalid new owner address");
+        products[productId].currentOwner = newOwner;
+    }
 }

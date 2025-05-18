@@ -18,13 +18,19 @@ https://book.getfoundry.sh/
 ### Build
 
 ```shell
-$ forge build
+$ forge build --via-ir
 ```
 
 ### Test
 
 ```shell
-$ forge test
+$ forge test --via-ir
+```
+
+### Test coverage Report
+```shell
+$ forge coverage --ir-minimum --report lcov
+$ genhtml lcov.info --branch-coverage --output-dir coverage
 ```
 
 ### Format

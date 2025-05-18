@@ -17,3 +17,7 @@ docs/
 .wake/
 Diagrams/
 .vscode/
+
+# coverage tests
+coverage/
+lcov.info

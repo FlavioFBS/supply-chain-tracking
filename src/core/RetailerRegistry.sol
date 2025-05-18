@@ -37,6 +37,16 @@ contract RetailerRegistry is AccessControl {
     {
         require(retailers[retailerId].retailerId != bytes32(0), "Retailer not registered");
         retailers[retailerId].activeAdmins[admin] = isActive;
+        grantRole(Roles.RETAILER_ROLE, admin);
+    }
+
+    function removeAdminByRetailer(address admin, bytes32 retailerId)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        require(retailers[retailerId].retailerId != bytes32(0), "Retailer not registered");
+        retailers[retailerId].activeAdmins[admin] = false;
+        revokeRole(Roles.RETAILER_ROLE, admin);
     }
 
     function isAdminByRetailer(address admin, bytes32 retailerId) external view returns (bool) {
