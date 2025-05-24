@@ -20,6 +20,7 @@ contract ProductRegistry is AccessControl {
         bytes32 manufacturerId; // Unique identifier for the manufacturer, e.g Ruc or hash of the company name
         bytes32 agreementId; // Unique identifier for the agreement. E.g. hash of the cocatenated manufacturerId and retailerId
         address currentOwner; // manufacturer → transporter → retailer
+        address[] previousOwners; // List of previous owners
     }
 
     mapping(uint256 => Product) public products;
@@ -45,13 +46,24 @@ contract ProductRegistry is AccessControl {
 
         uint256 productId = productNFT.mint(msg.sender);
         require(productId > 0, "Minting failed");
-        products[productId] = Product(msg.sender, block.timestamp, _ipfsHash, manufacturerId, agreementId, msg.sender);
+        products[productId] =
+            Product(msg.sender, block.timestamp, _ipfsHash, manufacturerId, agreementId, msg.sender, new address[](0));
         emit ProductRegistered(productId, msg.sender, _ipfsHash);
     }
 
     function updateProductOwner(uint256 productId, address newOwner) external onlyRole(Roles.MANUFACTURER_ROLE) {
         require(products[productId].manufacturer == msg.sender, "Not the product manufacturer");
         require(newOwner != address(0), "Invalid new owner address");
+        address currentOwner = products[productId].currentOwner;
+        products[productId].previousOwners.push(currentOwner);
         products[productId].currentOwner = newOwner;
+    }
+
+    function getProductCurrentOwner(uint256 productId) external view returns (address) {
+        return products[productId].currentOwner;
+    }
+
+    function getProductPreviousOwners(uint256 productId) external view returns (address[] memory) {
+        return products[productId].previousOwners;
     }
 }
